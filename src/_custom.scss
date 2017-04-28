@@ -1,0 +1,161 @@
+$base-font-size: 16px;
+
+// Use this file for your custom mixins/functions
+/// base-padding
+
+@mixin base-padding($gaps: $base-gap) {    
+	    padding-left:#{rem($gaps)};
+	    padding-right:#{rem($gaps)};
+}
+
+/// padding top-bot
+@mixin tb-padding($gaps: $base-gap) {
+    padding-top:#{rem($gaps)};
+    padding-bottom:#{rem($gaps)};
+}
+
+/// center block
+
+@mixin center-block {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+
+/// center both
+
+@mixin center-both {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/// center horizontal
+
+@mixin center-h {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/// center vertical
+
+@mixin center-v {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/// @param {String} $type - Either `relative`, `absolute` or `fixed`
+/// @param {Length} $left [null] - Left offset
+/// @param {Length} $right [null] - Right offset
+/// @param {Length} $top [null] - Top offset
+/// @param {Length} $bottom [null] - Bottom offset
+/// @example scss - Usage
+///   .foo {
+///     @include position(absolute, $top: 10px, $left: 10px);
+///   }
+
+@mixin position($type, $top: null, $right: null, $bottom: null, $left: null) {
+    position: $type;
+    top: $top;
+    right: $right;
+    bottom: $bottom;
+    left: $left;
+}
+
+/// @include tr-ease(100ms, all, 50ms);
+
+@mixin tr-ease($time, $property, $delay: 0ms) {
+	transition: $property ease-in-out $time $delay;
+}
+@mixin tr-lin($time, $property, $delay : 0ms) {
+	transition: $property linear $time $delay;
+}
+
+/// Breakpoint to min-width
+
+@mixin breakpoint($point) {
+    @if map-has-key($breakpoints, $point) {
+        @media (min-width: map-get($breakpoints, $point)) { @content; }
+    }
+    @else {
+        @warn "The breakpoint #{$point} is not associated with a min-width.";
+    }
+}
+
+
+/// Breakpoint to max width
+
+@mixin min-breakpoint($point) {
+    @if map-has-key($breakpoints, $point) {
+        @media (max-width: map-get($breakpoints, $point)) { @content; }
+    }
+    @else {
+        @warn "The breakpoint #{$point} is not associated with a min-width.";
+    }
+}
+
+/// Before/After Basics
+
+@mixin pseudo {
+    content:"";
+    position: absolute;
+} 
+
+// Classes for Social Icons
+
+i {
+    &.social-icon {
+        min-width:rem(29px);
+        min-height:rem(29px);
+        display:inline-block;
+
+        &.fb {
+            background:url("/images/facebook-icon.png") no-repeat center;
+            background-size:contain;
+        }
+    }
+}
+
+/// breakpoint seperation
+
+$sep-px: (
+    'thin':60px,
+    'thick':100px,   
+    'fat':120px
+);
+
+
+@mixin responsive-sep($breakpoint,$sep-px) {
+
+    @each $key, $val in $sep-px {
+
+        .#{$breakpoint}-sep-both-#{$key} {
+            padding-top:#{rem($val)};
+            padding-bottom:#{rem($val)};
+        }
+
+        .#{$breakpoint}-sep-bot-#{$key} {
+           padding-top:0;
+           padding-bottom:#{rem($val)};
+        }
+
+        .#{$breakpoint}-sep-top-#{$key} {
+            padding-top:#{rem($val)};
+            padding-bottom:0;
+        }
+    }
+}
+
+// Grid classes for default breakpoint (no min-width)
+@include responsive-sep(default,$sep-px);
+
+// Generate column classes
+@each $point, $width in $breakpoints {
+    @include breakpoint($point) {
+        @include responsive-sep($point, $sep-px);
+    }
+}
