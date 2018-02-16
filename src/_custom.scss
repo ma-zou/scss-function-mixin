@@ -1,11 +1,37 @@
 // Use this file for your custom mixins/functions
 
-// your custom.scss vars
-// $insta-grad: radial-gradient(circle farthest-corner at 35% 90%, #fec564, transparent 50%), radial-gradient(circle farthest-corner at 0 140%, #fec564, transparent 50%), radial-gradient(ellipse farthest-corner at 0 -25%, #5258cf, transparent 50%), radial-gradient(ellipse farthest-corner at 20% -50%, #5258cf, transparent 50%), radial-gradient(ellipse farthest-corner at 100% 0, #893dc2, transparent 50%), radial-gradient(ellipse farthest-corner at 60% -20%, #893dc2, transparent 50%), radial-gradient(ellipse farthest-corner at 100% 100%, #d9317a, transparent), linear-gradient(#6559ca, #bc318f 30%, #e33f5f 50%, #f77638 70%, #fec66d 100%);
+$grad-1: #000;
+$grad-2: rgba(255,255,255,0);
+$grad: linear-gradient(to top, $grad-1, $grad-2);
+$base-gap: 16px;
+$base-font-size: 16px;
+$bp-context: 16px;
 
-$grad-1: #136a8a;
-$grad-2: #267871;
-$grad: linear-gradient(to right, $grad-1, $grad-2);
+
+$breakpoints: (
+    'tiny':     em(480px, $bp-context),
+    'small':    em(640px, $bp-context),
+    'medium':   em(800px, $bp-context),
+    'large':    em(992px, $bp-context),
+    'giant':    em(1200px, $bp-context),
+    'huge':     em(1520px, $bp-context)
+);
+
+@mixin breakpoint($point, $direction: min) {
+    @if map-has-key($breakpoints, $point) {
+        @media ( #{$direction+'-width'}:
+            if( $direction == min, map-get($breakpoints, $point), map-get($breakpoints, $point) - em(1px))
+        ) { @content; }
+    }
+    @else {
+        @error "The breakpoint #{$point} is not associated with a min/max-width.";
+    }
+}
+
+@function rem($to-size, $from-size: $base-font-size) {
+    @if $to-size == 0px { @return 0 }
+    @return $to-size / $from-size * 1rem;
+}
 
 
 //mixing for padding left/right top/bottom and all
@@ -25,23 +51,50 @@ $grad: linear-gradient(to right, $grad-1, $grad-2);
 
 //mixing for margin left/right top/bottom and all
 @mixin margin($type, $gaps: $base-gap) {    
+    @if $gaps != "auto" {
+        $gaps: #{rem($gaps)};
+    }
+
     @if $type == "lr" {
-        margin-left:#{rem($gaps)};
-        margin-right:#{rem($gaps)}; 
+        margin-left:$gaps;
+        margin-right:$gaps; 
     } @else if $type == "tb" {
-        margin-top:#{rem($gaps)};
-        margin-bottom:#{rem($gaps)};     
+        margin-top:$gaps;
+        margin-bottom:$gaps;     
     } @else if $type == "b" {
-        margin:#{rem($gaps)};
+        margin:$gaps;
     } @else {
         @warn "invalide type Choose 'tb' for top/bottom or 'lr' for left/right";
     }
 }
 
+@mixin responsive-image($name) {
+    background:url('/images/layout/#{$name}-bg-small.jpg') no-repeat center center;
+    background-size:cover;
+    background-attachment: fixed;
+    
+    @include breakpoint(small) {
+        background:url('/images/layout/#{$name}-bg-medium.jpg') no-repeat center center;
+        background-size:cover;
+        background-attachment: fixed;
+        
+        @include breakpoint(medium) {
+            background:url('/images/layout/#{$name}-bg-full.jpg') no-repeat center center;
+            background-size:cover;
+            background-attachment: fixed;
+        }
+    }
+}
+
 // define Size shorthand Width and Height
-@mixin size($height, $width) {
-    height: $height;
-    width: $width;
+@mixin size($height, $width: null) {
+    @if ($width) {
+        height: #{rem($height)};
+        width: #{rem($width)};
+    } @else {
+        height:#{rem($height)};
+        width:#{rem($height)};
+    }
 }
 
 /// Center with margin and display block
@@ -73,16 +126,16 @@ $grad: linear-gradient(to right, $grad-1, $grad-2);
 @mixin pseudo ($position: absolute, $display: block, $content: '') {
     position: $position;
     display: $display;
-    content: '';
+    content: $content;
 }
 
 // Responsive seperation Classes
 $sep-px: (
     'unset': 0px,
-    'thin':30px,
-    'med': 100px,
-    'large': 120px,
-    'thick': 150px
+    'small':40px,
+    'medium': 100px,
+    'large': 150px,
+    'hr': 75px
 );
 
 @mixin responsive-sep($breakpoint,$sep-px) {
@@ -127,11 +180,11 @@ $sep-px: (
 }
 
 
-/////// |   | ///////////////////////// |   | ///////
 /////// |   | /////// Optional //////// |   | ///////
-////// \     / /////////////////////// \     / //////
-/////// \___/  //////////////////////// \___/  //////
 
+
+// $shadow: rem(0px) rem(17px) rem(48px) rem(8px) rgba(0,0,0,0.62);
+// $shadow2: rem(0px) rem(17px) rem(48px) rem(8px) rgba(0,0,0,0.15);
 
 // @mixin gradient-border {
 //     background:$grad;
@@ -168,3 +221,4 @@ $sep-px: (
 //         }
 //     }
 // }
+// Use this file for your custom mixins/functions
