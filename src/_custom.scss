@@ -105,6 +105,11 @@ $z-indexes: (
     }
 }
 
+// Photoshop letter Tracking -> CSS Letter Spacing
+@function ls($ps-value) {
+    @return $ps-value / 1000 * 16px;
+}
+
 @mixin responsive-image($name) {
     background:url('/images/layout/#{$name}-bg-small.jpg') no-repeat center center;
     background-size:cover;
